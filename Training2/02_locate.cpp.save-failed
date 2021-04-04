@@ -1,0 +1,113 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+int N;
+vector<tuple<int, int, vector<int>, vector<int>>> tests;
+
+struct comp
+{
+    template<typename T>
+    bool operator()(const T &l, const T &r) const
+    {
+        return !(l.x == r.x && l.y == r.y);
+    }
+};
+
+class Key
+{
+public:
+    int x, y;
+    Key(int x, int y)
+    {
+        this->x = x;
+        this->y = y;
+    }
+    //bool operator<(const Key& k) const{ return !(this->x == k.x && this->y == k.y);}
+    bool operator==(const Key& k) const{ return (this->x == k.x && this->y == k.y);}
+    Key operator-(const Key& k) const{ return Key(this->x - k.x, this->y - k.y);}
+};
+
+void input()
+{
+    cin >> N;
+    int tmpL, tmpC, tmp;
+    vector<int> tmp1, tmp2;
+    for (int i = 0; i < N; ++i)
+    {
+        tmp1.clear();
+        tmp2.clear();
+        cin >> tmpL >> tmpC;
+        for(int j = 0; j < tmpL*tmpC; ++j)
+        {
+            cin >> tmp;
+            tmp1.push_back(tmp);
+        }
+        for(int j = 0; j < tmpL*tmpC; ++j)
+        {
+            cin >> tmp;
+            tmp2.push_back(tmp);
+        }
+        tests.push_back(make_tuple(tmpL, tmpC, tmp1, tmp2));
+        cout << endl;
+    }
+}
+
+void solve()
+{
+    map<Key, int, comp> cnt;
+    vector<Key> m1_points, m2_points;
+
+    for(int i = 0; i < N; ++i)
+    {
+        cnt.clear(); m1_points.clear(); m2_points.clear();
+        int largest = 0;
+
+        tuple<int, int, vector<int>, vector<int>> test(tests.at(i));
+        int L = get<0>(test);
+        int C = get<1>(test);
+        vector<int> matrix1(get<2>(test));
+        vector<int> matrix2(get<3>(test));
+
+        for(int j = 0; j < L*C; ++j)
+        {
+            if(matrix1.at(j) == 1) m1_points.push_back(Key(j/C, j%C));
+            if(matrix2.at(j) == 1) m2_points.push_back(Key(j/C, j%C));
+        }
+
+
+        for(int j = 0; j < m1_points.size(); ++j)
+        {
+            for(int k = 0; k < m2_points.size(); ++k)
+            {
+                Key key = m2_points.at(k) - m1_points.at(j);
+
+                if(!cnt.count(key) || cnt.empty())
+                {
+                    cnt.insert(make_pair(key, 0));
+                }
+                else cnt.find(key)->second = cnt.find(key)->second + 1;
+
+                //cout << "{" << key.x << "," << key.y << "}" << endl;
+                //cout << "{" << key.x << "," << key.y << "} = " << cnt.find(key)->second << endl;
+            }
+        }
+
+        for(map<Key, int>::iterator it = cnt.begin(); it != cnt.end(); it++)
+        {
+            if (it->second > largest) largest = it->second;
+            cout << "{" << it->first.x << "," << it->first.y << "} = " << it->second << endl;
+        }
+        cout << endl;
+        cout << (Key(3,4) == Key(3,4)) << endl;
+        //cout << largest << endl;
+
+    }
+
+}
+
+int main()
+{
+    input();
+    solve();
+    return 0;
+}

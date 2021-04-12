@@ -1,6 +1,6 @@
 #include <bits/stdc++.h>
 using namespace std;
-#define MAX 11
+#define MAX 20
 
 int N;
 int c[2*MAX+1][2*MAX+1];
@@ -26,29 +26,27 @@ void input()
         }
 }
 
-bool check(int g,int i)
-{
-    if(i > N || mark[i] == 1)
-}
-
 void TRY(int k)
 {
-    for(int i = 0; i < N; ++i)
+    for(int i = 1; i <= N; ++i)
     {
-        if(check(x[k-1], i))
+        if(!mark[i])
         {
             mark[i] = 1;
             x[k] = i;
             x[k+1] = i + N;
             cur += c[x[k-1]][i] + c[i][i+N];
 
-            if(k == N-1)
+            if(k == 2*N-1)
             {
                 cur += c[i+N][0];
                 best = min(cur, best);
                 cur -= c[i+N][0];
             }
-            else TRY(k+2);
+            else
+            {
+                if(cur + cmin*(2*N-k) < best) TRY(k+2);
+            }
 
             mark[i] = 0;
             cur -= c[x[k-1]][i] + c[i][i+N];
